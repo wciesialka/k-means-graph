@@ -4,7 +4,7 @@
 
 // constants
 
-const K = 5;
+const K = 10;
 const N = 10000;
 
 
@@ -73,7 +73,8 @@ function line(ctx, x1, y1, x2, y2) {
 
 
 function draw_graph(ctx, space, w, h) {
-    for (var i = space; i < w; i += space) {
+    var j = Math.max(w,h);
+    for (var i = space; i < j; i += space) {
         ctx.strokeStyle = "#3F3F3F"
         line(ctx, 0, i, w, i);
         line(ctx, i, 0, i, h);
