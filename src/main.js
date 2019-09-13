@@ -2,6 +2,12 @@
     window.onload = init;
 })(window, document, undefined);
 
+// constants
+
+const K = 5;
+const N = 10000;
+
+
 // random color generation
 
 function HSVtoRGB(h, s, v) {
@@ -50,11 +56,8 @@ function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-function random_color() {
-    var h = Math.floor(Math.random() * 72) * 5;
-    var s = (Math.random() * 0.5) + 0.5;
-    var v = 1;
-    var rgb = HSVtoRGB(h / 360, s, v);
+function color_from_hue(h) {
+    var rgb = HSVtoRGB(h/360, 1, 1);
     return rgbToHex(rgb.r, rgb.g, rgb.b);
 }
 
@@ -161,6 +164,8 @@ function calculate_centroids(centroids, points) {
     }
 }
 
+var current_h = 0;
+
 function k_means(k, points) {
     var centroids = [];
     var used_indices = [];
@@ -173,9 +178,11 @@ function k_means(k, points) {
         var centroid = {
             x: p.x,
             y: p.y,
-            c: random_color()
+            c: color_from_hue(current_h)
         }
         centroids.push(centroid);
+
+        current_h = current_h + Math.floor(360/K);
     }
 
     calculate_centroids(centroids, points);
@@ -189,9 +196,6 @@ function k_means(k, points) {
 
 function init() {
 
-    const n = 100;
-    const k = 3;
-
     var canvas = document.getElementById("graph");
     var ctx = canvas.getContext("2d");
     var w = ctx.canvas.width;
@@ -202,9 +206,9 @@ function init() {
 
     draw_graph(ctx, 10, w, h);
 
-    var points = generate_points(n, w, h);
+    var points = generate_points(N, w, h);
 
-    var centroids = k_means(k, points);
+    var centroids = k_means(K, points);
 
     plot_centroids(ctx, centroids);
 }
