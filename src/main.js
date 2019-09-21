@@ -4,8 +4,9 @@
 
 // constants
 
-const K = 10;
+const K = 9;
 const N = 10000;
+const F = Math.floor(550/K);
 
 
 // random color generation
@@ -57,7 +58,7 @@ function rgbToHex(r, g, b) {
 }
 
 function color_from_hue(h) {
-    var rgb = HSVtoRGB(h/360, 1, 1);
+    var rgb = HSVtoRGB(h / 360, 1, 1);
     return rgbToHex(rgb.r, rgb.g, rgb.b);
 }
 
@@ -71,9 +72,21 @@ function line(ctx, x1, y1, x2, y2) {
     ctx.restore();
 }
 
+function strokeFillText(ctx,x,y,text)
+{
+    var rX = x - (F/4);
+    var rY = y + (F/4);
+    ctx.font = F +"px Arial";
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 3;
+    ctx.strokeText(text, rX, rY); 
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(text, rX, rY);
+}
+
 
 function draw_graph(ctx, space, w, h) {
-    var j = Math.max(w,h);
+    var j = Math.max(w, h);
     for (var i = space; i < j; i += space) {
         ctx.strokeStyle = "#3F3F3F"
         line(ctx, 0, i, w, i);
@@ -89,13 +102,15 @@ function plot_point(ctx, x, y, r) {
 
 function plot_centroids(ctx, centroids) {
 
-    centroids.forEach(centroid => {
+    for(i in centroids)
+    {
+        var centroid = centroids[i];
         ctx.fillStyle = centroid.c;
         centroid.children.forEach(point => {
             plot_point(ctx, point.x, point.y, 3);
         });
-    });
-
+        strokeFillText(ctx,centroid.x,centroid.y,String(Number(i)+1));
+    }
 }
 
 // points
@@ -156,12 +171,10 @@ function calculate_centroids(centroids, points) {
         centroid.y = newY;
     });
 
-    if(convergence)
-    {
+    if (convergence) {
         return centroids;
-    } else
-    {
-        calculate_centroids(centroids,points);
+    } else {
+        calculate_centroids(centroids, points);
     }
 }
 
@@ -183,7 +196,7 @@ function k_means(k, points) {
         }
         centroids.push(centroid);
 
-        current_h = current_h + Math.floor(360/K);
+        current_h = current_h + Math.floor(360 / K);
     }
 
     calculate_centroids(centroids, points);
